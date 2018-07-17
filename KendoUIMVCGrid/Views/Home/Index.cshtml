@@ -84,47 +84,49 @@
 </div>
 <script>
     $(document).ready(function () {
-
-
         $("#grid .k-grid-content-locked table").on("keydown", "td", function (e) {
-           
             var currentFocusCell = $(e.currentTarget).closest('td');
             var currentFocusRow = $(e.currentTarget).closest('tr');
             var code = (e.keyCode ? e.keyCode : e.which);
             switch (code) {
-
                 case 13:
-                    cellFocusDown(currentFocusCell, currentFocusRow);
+                    cellFocusDown(currentFocusCell, currentFocusRow, true);
                     break;
                 case 40:
-                    cellFocusDown(currentFocusCell, currentFocusRow);
+                    cellFocusDown(currentFocusCell, currentFocusRow, true);
                     break;
             }
 
         });
         $("#grid .k-grid-content").on("keydown", "td .k-textbox", function (e) {
-            
             var currentFocusCell = $(e.currentTarget).closest('td');
             var currentFocusRow = $(e.currentTarget).closest('tr');
             var code = (e.keyCode ? e.keyCode : e.which);
             switch (code) {
-
                 case 13:
-                    cellFocusDown(currentFocusCell, currentFocusRow);
+                    cellFocusDown(currentFocusCell, currentFocusRow, false);
                     break;
                 case 40:
-                    cellFocusDown(currentFocusCell, currentFocusRow);
+                    cellFocusDown(currentFocusCell, currentFocusRow, false);
                     break;
             }
 
         });
-        function cellFocusDown(currentFocusCell, currentFocusRow) {
-
+        function cellFocusDown(currentFocusCell, currentFocusRow, lockedContent) {
+            var grid = $("#grid").data("kendoGrid");
             var DowntdIndex = currentFocusCell.index();
             var DownNextRow = currentFocusRow.next();
+
             nextFocusCell = $(DownNextRow).find('td:eq(' + DowntdIndex + ')');
             nextFocusCell.click();
+
+            if (lockedContent) {
+                grid.content.scrollTop(grid.lockedContent.scrollTop());
+            } else {
+                grid.content.trigger("scroll");
+            }
         }
+
     });
 
 </script>
