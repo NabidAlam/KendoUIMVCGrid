@@ -1,4 +1,6 @@
-﻿@{
+﻿
+@model KendoUIMVCGrid.Models.OrderViewModel
+@{
     ViewBag.Title = "Home Page";
 }
 
@@ -11,8 +13,8 @@
             <h2>Lorem ipsum dolor sit amet...</h2>
             <p>
                 Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a
-            galley of type and scrambled it to make a type specimen book.
+                Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a
+                galley of type and scrambled it to make a type specimen book.
             </p>
 
             <p>
@@ -24,8 +26,8 @@
             <h2>&nbsp;</h2>
             <p>
                 Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a
-            galley of type and scrambled it to make a type specimen book.
+                Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a
+                galley of type and scrambled it to make a type specimen book.
             </p>
             <p>
                 <button class="textButton">Button</button>
@@ -36,8 +38,8 @@
             <h2>&nbsp;</h2>
             <p>
                 Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a
-            galley of type and scrambled it to make a type specimen book.
+                Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a
+                galley of type and scrambled it to make a type specimen book.
             </p>
 
             <p>
@@ -50,55 +52,79 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-xs-18 col-md-12">
-			<div id="grid"></div>
-		</div>
+            @(Html.Kendo().Grid<KendoUIMVCGrid.Models.OrderViewModel>()
+                    .Name("grid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(o => o.OrderID).Width(150).Locked(true).Lockable(false);
+                        columns.Bound(o => o.ShipCountry).Width(300);
+                        columns.Bound(o => o.ShipCity).Width(300);
+                        columns.Bound(o => o.ShipName).Width(300).Locked(true);
+                        columns.Bound(o => o.ShipAddress).Width(400).Lockable(false);
+                    })
+                    .Editable(editable => editable.Mode(GridEditMode.InCell))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(30)
+                        .Model(model => model.Id(p => p.OrderID))
+                        .Read(read => read.Action("Orders_Read", "Grid"))
+                     )
+                    .Scrollable(scrollable => scrollable.Height(540))
+                    .Reorderable(reorderable => reorderable.Columns(true))
+                    .Resizable(resizable => resizable.Columns(true))
+                   // .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Pageable()
+                    .Filterable()
+                    .Sortable()
+                    .Groupable()
+                    .ColumnMenu()
+            )
+        </div>
     </div>
 </div>
 <script>
-	$(document).ready(function() {
-	        
-        $(".textButton").kendoButton();
-        
-        $("#grid").kendoGrid({
-            dataSource: {
-                type: "odata",
-                transport: {
-                    read: "https://demos.telerik.com/kendo-ui/service/Northwind.svc/Orders"
-                },
-                schema: {
-                    model: {
-                        fields: {
-                            OrderID: { type: "number" },
-                            Freight: { type: "number" },
-                            ShipName: { type: "string" },
-                            OrderDate: { type: "date" },
-                            ShipCity: { type: "string" }
-                        }
-                    }
-                },
-                pageSize: 20
-            },
-            height: 550,
-            filterable: true,
-            sortable: true,
-            pageable: true,
-            columns: [{
-                    field:"OrderID",
-                    filterable: false
-                },
-                "Freight",
-                {
-                    field: "OrderDate",
-                    title: "Order Date",
-                    format: "{0:MM/dd/yyyy}"
-                }, {
-                    field: "ShipName",
-                    title: "Ship Name"
-                }, {
-                    field: "ShipCity",
-                    title: "Ship City"
-                }
-            ]
+    $(document).ready(function () {
+
+
+        $("#grid .k-grid-content-locked table").on("keydown", "td", function (e) {
+           
+            var currentFocusCell = $(e.currentTarget).closest('td');
+            var currentFocusRow = $(e.currentTarget).closest('tr');
+            var code = (e.keyCode ? e.keyCode : e.which);
+            switch (code) {
+
+                case 13:
+                    cellFocusDown(currentFocusCell, currentFocusRow);
+                    break;
+                case 40:
+                    cellFocusDown(currentFocusCell, currentFocusRow);
+                    break;
+            }
+
         });
+        $("#grid .k-grid-content").on("keydown", "td .k-textbox", function (e) {
+            
+            var currentFocusCell = $(e.currentTarget).closest('td');
+            var currentFocusRow = $(e.currentTarget).closest('tr');
+            var code = (e.keyCode ? e.keyCode : e.which);
+            switch (code) {
+
+                case 13:
+                    cellFocusDown(currentFocusCell, currentFocusRow);
+                    break;
+                case 40:
+                    cellFocusDown(currentFocusCell, currentFocusRow);
+                    break;
+            }
+
+        });
+        function cellFocusDown(currentFocusCell, currentFocusRow) {
+
+            var DowntdIndex = currentFocusCell.index();
+            var DownNextRow = currentFocusRow.next();
+            nextFocusCell = $(DownNextRow).find('td:eq(' + DowntdIndex + ')');
+            nextFocusCell.click();
+        }
     });
+
 </script>

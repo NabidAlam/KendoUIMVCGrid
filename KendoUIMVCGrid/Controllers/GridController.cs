@@ -2,13 +2,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
 using KendoUIMVCGrid.Models;
 
 namespace KendoUIMVCGrid.Controllers
 {
 	public partial class GridController : Controller
     {
-		public ActionResult Orders_Read()
+		public ActionResult Orders_Read([DataSourceRequest]DataSourceRequest request)
 		{
 			var result = Enumerable.Range(0, 50).Select(i => new OrderViewModel
 			{
@@ -17,9 +19,11 @@ namespace KendoUIMVCGrid.Controllers
 				OrderDate = DateTime.Now.AddDays(i),
 				ShipName = "ShipName " + i,
 				ShipCity = "ShipCity " + i
-			});
 
-			return Json(result);
+			}).ToList();
+
+
+            return Json(result.ToDataSourceResult(request));
 		}
 	}
 }
